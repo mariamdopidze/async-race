@@ -1,44 +1,88 @@
+// src/features/garage/garageSlice.ts
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { getCars, createCar as apiCreateCar, updateCar as apiUpdateCar, deleteCar as apiDeleteCar, Car } from "../../api/garageApi";
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Car } from '../../api/cars';
-
-interface GarageState {
+export interface GarageState {
   cars: Car[];
-  totalCars: number;
-  currentPage: number;
+  loading: boolean;
+  error: string | null;
 }
 
 const initialState: GarageState = {
   cars: [],
-  totalCars: 0,
-  currentPage: 1,
+  loading: false,
+  error: null,
 };
 
+// Async thunks
+export const fetchCars = createAsyncThunk("garage/fetchCars", async () => {
+  const result = await getCars();
+  return result.data;
+});
+
+export const addCar = createAsyncThunk(
+  "garage/addCar",
+  async (car: { name: string; color: string }) => {
+    const result = await apiCreateCar(car.name, car.color);
+    return result;
+  }
+);
+
+export const editCar = createAsyncThunk(
+  "garage/editCar",
+  async (car: { id: number; name: string; color: string }) => {
+    const result = await apiUpdateCar(car.id, car.name, car.color);
+    return result;
+  }
+);
+
+export const removeCar = createAsyncThunk(
+  "garage/removeCar",
+  async (id: number) => {
+    await apiDeleteCar(id);
+    return id;
+  }
+);
+
+// Slice
 const garageSlice = createSlice({
-  name: 'garage',
+  name: "garage",
   initialState,
-  reducers: {
-    setCars(state, action: PayloadAction<Car[]>) {
-      state.cars = action.payload;
-    },
-    setTotalCars(state, action: PayloadAction<number>) {
-      state.totalCars = action.payload;
-    },
-    setCurrentPage(state, action: PayloadAction<number>) {
-      state.currentPage = action.payload;
-    },
-    addCar(state, action: PayloadAction<Car>) {
-      state.cars.push(action.payload);
-    },
-    updateCar(state, action: PayloadAction<Car>) {
-      const index = state.cars.findIndex(c => c.id === action.payload.id);
-      if (index !== -1) state.cars[index] = action.payload;
-    },
-    removeCar(state, action: PayloadAction<number>) {
-      state.cars = state.cars.filter(c => c.id !== action.payload);
-    },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      // fetchCars
+      .addCase(fetchCars.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCars.fulfilled, (state, action: PayloadAction<Car[]>) => {
+        state.cars = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchCars.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Error fetching cars";
+      })
+
+      // addCar
+      .addCase(addCar.fulfilled, (state, action: PayloadAction<Car>) => {
+        state.cars.push(action.payload);
+      })
+
+      // editCar
+      .addCase(editCar.fulfilled, (state, action: PayloadAction<Car>) => {
+        const index = state.cars.findIndex(c => c.id === action.payload.id);
+        if (index !== -1) {
+          state.cars[index] = action.payload;
+        }
+      })
+
+      // removeCar
+      .addCase(removeCar.fulfilled, (state, action: PayloadAction<number>) => {
+        state.cars = state.cars.filter(c => c.id !== action.payload);
+      });
   },
 });
 
-export const { setCars, setTotalCars, setCurrentPage, addCar, updateCar, removeCar } = garageSlice.actions;
 export default garageSlice.reducer;
