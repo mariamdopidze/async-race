@@ -1,13 +1,85 @@
-body {
+/* src/index.css */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@600&display=swap');
+
+* {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+body {
+  background: #0a0a0a;
+  color: #fff;
+  font-family: 'Rajdhani', sans-serif;
+  background-image: 
+    linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)),
+    url('https://images.unsplash.com/photo-1558618666-fcd0c5ee0648?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
+  background-size: cover;
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+h1, h2, h3 {
+  font-family: 'Orbitron', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+button {
+  font-family: 'Orbitron', sans-serif;
+  padding: 12px 25px;
+  margin: 8px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: all 0.3s;
+  text-transform: uppercase;
+}
+
+.neon-text {
+  color: #fff;
+  text-shadow: 
+    0 0 10px #00f0ff,
+    0 0 20px #00f0ff,
+    0 0 40px #00f0ff,
+    0 0 80px #00f0ff;
+}
+
+.neon-pink {
+  color: #ff00ff;
+  text-shadow: 
+    0 0 10px #ff00ff,
+    0 0 20px #ff00ff,
+    0 0 40px #ff00ff;
+}
+
+.neon-border {
+  border: 2px solid #00f0ff;
+  box-shadow: 0 0 20px #00f0ff;
+}
+
+.track {
+  background: linear-gradient(to right, #1a1a1a 0%, #333 2%, #333 98%, #1a1a1a 100%);
+  border: 3px solid #00f0ff;
+  box-shadow: 0 0 30px #00f0ff, inset 0 0 20px rgba(0,240,255,0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.finish-line {
+  position: absolute;
+  right: 20px;
+  top: 0;
+  bottom: 0;
+  width: 12px;
+  background: repeating-linear-gradient(
+    0deg,
+    #fff,
+    #fff 20px,
+    #000 20px,
+    #000 40px
+  );
+  box-shadow: 0 0 20px #fff;
 }

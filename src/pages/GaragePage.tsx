@@ -1,72 +1,111 @@
 // src/pages/GaragePage.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useGarage } from "../hooks/useGarage";
+import CarItem from "../components/CarItem";
 import AddCarForm from "../components/AddCarForm";
-import Pagination from "../components/Pagination";
 import RaceControls from "../components/RaceControls";
+import WinnerModal from "../components/WinnerModal";
+import Pagination from "../components/Pagination";
+import { generate100Cars } from "../utils/generateCars";
+
+interface Winner {
+  car: { id: number; name: string; color: string };
+  time: number;
+}
 
 const GaragePage: React.FC = () => {
-  const { cars, loading, error, addNewCar, updateCar, deleteCar } = useGarage();
+  const { cars, loading, addNewCar, deleteCar } = useGarage();
   const [page, setPage] = useState(1);
-  const limit = 7; // cars per page
-  const total = cars.length;
+  const [isRacing, setIsRacing] = useState(false);
+  const [winner, setWinner] = useState<Winner | null>(null);
+  const limit = 7;
 
-  const handleEdit = (car: typeof cars[0]) => {
-    const newName = prompt("New name:", car.name);
-    const newColor = prompt("New color:", car.color);
-    if (newName && newColor) {
-      updateCar(car.id, newName, newColor);
+  const currentCars = cars.slice((page - 1) * limit, page * limit);
+
+  // გამარჯვებულის შენახვა API-ში
+  const saveWinner = async (carId: number, time: number) => {
+    const { getWinner, createWinner, updateWinner } = await import("../api/winnersApi");
+    const existing = await getWinner(carId);
+    const seconds = Number((time / 1000).toFixed(2));
+
+    if (existing) {
+      const wins = existing.wins + 1;
+      const bestTime = Math.min(existing.time, seconds);
+      await updateWinner(carId, wins, bestTime);
+    } else {
+      await createWinner({ id: carId, wins: 1, time: seconds });
     }
   };
 
-  const handleRaceStart = () => {
-    alert("Race started!");
+  // მოვუსმინოთ მანქანის ფინიშს
+  useEffect(() => {
+    const handleCarFinish = ((e: CustomEvent) => {
+      if (!isRacing) return;
+      const { car, time } = e.detail;
+      setWinner({ car, time });
+      saveWinner(car.id, time); // აქ ვინახავთ გამარჯვებულს
+      setIsRacing(false);
+    }) as EventListener;
+
+    window.addEventListener("car-finished", handleCarFinish);
+    return () => window.removeEventListener("car-finished", handleCarFinish);
+  }, [isRacing]);
+
+  const startRace = () => {
+    if (isRacing) return;
+    setIsRacing(true);
+    setWinner(null);
+    currentCars.forEach((car) => {
+      window.dispatchEvent(new CustomEvent("start-car", { detail: car.id }));
+    });
   };
 
-  const handleRaceReset = () => {
-    alert("Race reset!");
+  const resetRace = () => {
+    setIsRacing(false);
+    setWinner(null);
+    currentCars.forEach((car) => {
+      window.dispatchEvent(new CustomEvent("stop-car", { detail: car.id }));
+    });
   };
 
-  const handleGenerate = () => {
-    alert("100 cars generated!");
+  const handleGenerate = async () => {
+    if (confirm("დარწმუნებული ხარ? 100 მანქანა შეიქმნება!")) {
+      await generate100Cars();
+      alert("100 მანქანა წარმატებით შეიქმნა!");
+    }
   };
-
-  const paginatedCars = cars.slice((page - 1) * limit, page * limit);
 
   return (
-    <div>
-      <h1>Garage</h1>
+    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif", minHeight: "100vh", background: "#f4f4f4" }}>
+      <h1 style={{ fontSize: "3rem", textAlign: "center", color: "#d40000" }}>
+        GARAGE ({cars.length} cars)
+      </h1>
 
       <AddCarForm onAdd={addNewCar} />
 
       <RaceControls
-        onRaceStart={handleRaceStart}
-        onRaceReset={handleRaceReset}
-        onGenerate={handleGenerate}
+        onRaceStart={startRace}
+        onRaceReset={resetRace}
+        onGenerateCars={handleGenerate}
+        isRacing={isRacing}
       />
 
-      {loading && <p>Loading...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-
-      {paginatedCars.length === 0 ? (
-        <p>No cars yet</p>
-      ) : (
-        <ul>
-          {paginatedCars.map((car) => (
-            <li key={car.id}>
-              <span>{car.name} - {car.color} </span>
-              <button onClick={() => handleEdit(car)}>Edit</button>
-              <button onClick={() => deleteCar(car.id)}>Delete</button>
-            </li>
-          ))}
-        </ul>
+      {loading && <p style={{ textAlign: "center", fontSize: "1.5rem" }}>იტვირთება მანქანები...</p>}
+      {!loading && currentCars.length === 0 && (
+        <p style={{ textAlign: "center", fontSize: "2rem", color: "#666" }}>გარაჟი ცარიელია</p>
       )}
 
-      <Pagination
-        page={page}
-        total={total}
-        limit={limit}
-        onChange={setPage}
+      <div>
+        {currentCars.map((car) => (
+          <CarItem key={car.id} car={car} onDelete={deleteCar} onSelect={() => {}} />
+        ))}
+      </div>
+
+      <Pagination page={page} total={cars.length} limit={limit} onChange={setPage} />
+
+      <WinnerModal
+        winner={winner ? { name: winner.car.name, time: winner.time } : null}
+        onClose={() => setWinner(null)}
       />
     </div>
   );

@@ -1,4 +1,4 @@
-// src/components/AddCarForm.tsx
+
 import React, { useState } from "react";
 import ColorPicker from "./ColorPicker";
 

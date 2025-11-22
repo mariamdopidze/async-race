@@ -1,4 +1,4 @@
-// src/features/garage/garageSlice.ts
+
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { getCars, createCar as apiCreateCar, updateCar as apiUpdateCar, deleteCar as apiDeleteCar, Car } from "../../api/garageApi";
 
@@ -14,7 +14,7 @@ const initialState: GarageState = {
   error: null,
 };
 
-// Async thunks
+
 export const fetchCars = createAsyncThunk("garage/fetchCars", async () => {
   const result = await getCars();
   return result.data;
@@ -44,14 +44,14 @@ export const removeCar = createAsyncThunk(
   }
 );
 
-// Slice
+
 const garageSlice = createSlice({
   name: "garage",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // fetchCars
+    
       .addCase(fetchCars.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -65,12 +65,12 @@ const garageSlice = createSlice({
         state.error = action.error.message || "Error fetching cars";
       })
 
-      // addCar
+
       .addCase(addCar.fulfilled, (state, action: PayloadAction<Car>) => {
         state.cars.push(action.payload);
       })
 
-      // editCar
+
       .addCase(editCar.fulfilled, (state, action: PayloadAction<Car>) => {
         const index = state.cars.findIndex(c => c.id === action.payload.id);
         if (index !== -1) {
@@ -78,7 +78,6 @@ const garageSlice = createSlice({
         }
       })
 
-      // removeCar
       .addCase(removeCar.fulfilled, (state, action: PayloadAction<number>) => {
         state.cars = state.cars.filter(c => c.id !== action.payload);
       });
