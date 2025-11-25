@@ -1,4 +1,4 @@
-// src/pages/GaragePage.tsx
+
 import React, { useState, useEffect } from "react";
 import { useGarage } from "../hooks/useGarage";
 import CarItem from "../components/CarItem";
@@ -14,7 +14,7 @@ const GaragePage = () => {
   const startIdx = (page - 1) * carsPerPage;
   const visibleCars = cars.slice(startIdx, startIdx + carsPerPage);
 
-  // გამარჯვებულის შენახვა
+  
   const saveWinner = async (carId: number, timeInMs: number) => {
     try {
       const seconds = Number((timeInMs / 1000).toFixed(2));
@@ -85,7 +85,7 @@ const GaragePage = () => {
         GARAGE — {cars.length} CARS
       </h1>
 
-      {/* CREATE CAR */}
+    
       <div style={{ textAlign: "center", margin: "50px 0" }}>
         <input
           id="car-name"
@@ -133,7 +133,7 @@ const GaragePage = () => {
         </button>
       </div>
 
-      {/* MAIN BUTTONS — იდეალური განლაგება */}
+    
       <div style={{
         textAlign: "center",
         margin: "80px 0",
@@ -198,7 +198,7 @@ const GaragePage = () => {
         </button>
       </div>
 
-      {/* CARS LIST */}
+     
       <div style={{ maxWidth: "1300px", margin: "0 auto" }}>
         {loading ? (
           <p style={{ textAlign: "center", fontSize: "2rem", color: "#666", margin: "100px" }}>იტვირთება...</p>
@@ -211,7 +211,7 @@ const GaragePage = () => {
         )}
       </div>
 
-      {/* PAGINATION */}
+    
       <div style={{ textAlign: "center", margin: "80px 0" }}>
         <button
           onClick={() => setPage(p => Math.max(1, p - 1))}
@@ -232,7 +232,7 @@ const GaragePage = () => {
         </button>
       </div>
 
-      {/* WINNER MODAL */}
+     
       {winner && <WinnerModal winner={winner} onClose={() => setWinner(null)} />}
     </div>
   );
