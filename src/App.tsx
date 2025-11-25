@@ -1,59 +1,43 @@
-// src/App.tsx
+
 import React from "react";
 import { BrowserRouter, Routes, Route, Link, useLocation } from "react-router-dom";
 import GaragePage from "./pages/GaragePage";
 import WinnersPage from "./pages/WinnersPage";
-import './index.css';
+import "./index.css";
 
-function Nav() {
+const Nav = () => {
   const location = useLocation();
-  const isGarage = location.pathname === "/";
+  const isWinners = location.pathname === "/winners";
 
   return (
     <nav style={{
-      padding: "40px 20px",
+      padding: "40px",
       textAlign: "center",
-      background: "rgba(0,0,0,0.8)",
-      borderBottom: "3px solid #00f0ff",
-      boxShadow: "0 0 30px #00f0ff"
+      background: "rgba(0,0,0,0.7)",
+      borderBottom: "4px solid #00ffff",
+      boxShadow: "0 0 40px #00ffff"
     }}>
-      <div style={{ fontSize: "4rem", fontWeight: 900, marginBottom: 20 }}>
+      <div style={{ fontSize: "5rem", marginBottom: "20px" }}>
         <span className="neon-text">ASYNC</span>
-        <span style={{ marginLeft: 20 }} className="neon-pink">RACE</span>
+        <span className="neon-pink" style={{ marginLeft: "30px" }}>RACE</span>
       </div>
-      <div style={{ fontSize: "2rem", marginTop: 20 }}>
-        <Link 
-          to="/" 
-          style={{ 
-            color: isGarage ? "#00f0ff" : "#666", 
-            margin: "0 50px",
-            textDecoration: "none",
-            padding: "10px 30px",
-            border: isGarage ? "2px solid #00f0ff" : "none",
-            borderRadius: 10,
-            boxShadow: isGarage ? "0 0 20px #00f0ff" : "none"
-          }}
-        >
+      <div>
+        <Link to="/" className="neon-btn" style={{ margin: "0 40px", fontSize: "2rem" }}>
           GARAGE
         </Link>
-        <Link 
-          to="/winners" 
-          style={{ 
-            color: !isGarage ? "#ff00ff" : "#666", 
-            margin: "0 50px",
-            textDecoration: "none",
-            padding: "10px 30px",
-            border: !isGarage ? "2px solid #ff00ff" : "none",
-            borderRadius: 10,
-            boxShadow: !isGarage ? "0 0 20px #ff00ff" : "none"
-          }}
-        >
+        <Link to="/winners" className="neon-btn" style={{ 
+          margin: "0 40px", 
+          fontSize: "2rem",
+          borderColor: "#ff00ff",
+          color: "#ff00ff",
+          boxShadow: "0 0 30px #ff00ff"
+        }}>
           WINNERS
         </Link>
       </div>
     </nav>
   );
-}
+};
 
 function App() {
   return (

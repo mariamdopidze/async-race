@@ -1,5 +1,5 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@600;700&display=swap');
 
 * {
   margin: 0;
@@ -8,43 +8,32 @@
 }
 
 body {
-  background: #0a0a0a;
-  color: #fff;
-  font-family: 'Rajdhani', sans-serif;
+  background: #0a0118;
   background-image: 
-    linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)),
-    url('https://images.unsplash.com/photo-1558618666-fcd0c5ee0648?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
+    radial-gradient(circle at top left, #1a0033 0%, transparent 50%),
+    radial-gradient(circle at bottom right, #000033 0%, transparent 50%),
+    url('https://images.unsplash.com/photo-1557682250-33bd709cbe85?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
   background-size: cover;
   background-attachment: fixed;
+  color: #fff;
+  font-family: 'Rajdhani', sans-serif;
   min-height: 100vh;
 }
 
 h1, h2, h3 {
   font-family: 'Orbitron', sans-serif;
   text-transform: uppercase;
-  letter-spacing: 3px;
-}
-
-button {
-  font-family: 'Orbitron', sans-serif;
-  padding: 12px 25px;
-  margin: 8px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: bold;
-  transition: all 0.3s;
-  text-transform: uppercase;
+  letter-spacing: 4px;
 }
 
 .neon-text {
-  color: #fff;
+  color: #00ffff;
   text-shadow: 
-    0 0 10px #00f0ff,
-    0 0 20px #00f0ff,
-    0 0 40px #00f0ff,
-    0 0 80px #00f0ff;
+    0 0 10px #00ffff,
+    0 0 20px #00ffff,
+    0 0 40px #00ffff,
+    0 0 80px #00ffff;
+  animation: pulse 3s infinite;
 }
 
 .neon-pink {
@@ -55,31 +44,51 @@ button {
     0 0 40px #ff00ff;
 }
 
-.neon-border {
-  border: 2px solid #00f0ff;
-  box-shadow: 0 0 20px #00f0ff;
+.neon-btn {
+  background: transparent;
+  border: 3px solid #00ffff;
+  color: #00ffff;
+  padding: 15px 50px;
+  font-size: 1.8rem;
+  font-family: 'Orbitron', sans-serif;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 0 20px #00ffff;
+}
+
+.neon-btn:hover {
+  background: #00ffff;
+  color: #000;
+  box-shadow: 0 0 40px #00ffff;
+}
+
+.race-btn {
+  background: linear-gradient(45deg, #ff0080, #ff00ff);
+  border: none;
+  box-shadow: 0 0 30px #ff00ff;
 }
 
 .track {
-  background: linear-gradient(to right, #1a1a1a 0%, #333 2%, #333 98%, #1a1a1a 100%);
-  border: 3px solid #00f0ff;
-  box-shadow: 0 0 30px #00f0ff, inset 0 0 20px rgba(0,240,255,0.3);
+  background: #111;
+  border: 4px solid #00ffff;
+  box-shadow: 0 0 30px #00ffff, inset 0 0 20px rgba(0, 255, 255, 0.3);
   position: relative;
   overflow: hidden;
+  border-radius: 15px;
 }
 
 .finish-line {
   position: absolute;
-  right: 20px;
+  right: 10px;
   top: 0;
   bottom: 0;
-  width: 12px;
-  background: repeating-linear-gradient(
-    0deg,
-    #fff,
-    #fff 20px,
-    #000 20px,
-    #000 40px
-  );
-  box-shadow: 0 0 20px #fff;
+  width: 15px;
+  background: repeating-linear-gradient(0deg, #fff, #fff 25px, #000 25px, #000 50px);
+  box-shadow: 0 0 30px #fff;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
 }
