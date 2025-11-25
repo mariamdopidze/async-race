@@ -1,4 +1,4 @@
-// src/components/CarItem.tsx
+
 import React, { useEffect, useRef } from "react";
 import { Car } from "../api/garageApi";
 import { useCarAnimation } from "../hooks/useCarAnimation";
@@ -21,15 +21,15 @@ const CarItem: React.FC<Props> = ({ car, onDelete, onSelect }) => {
 
     try {
       const { velocity, distance } = await startEngine(car.id);
-      const duration = distance / velocity; // ms
+      const duration = distance / velocity; 
 
-      await switchToDrive(car.id); // შეიძლება გაწყდეს
+      await switchToDrive(car.id); 
 
       animate(
         duration,
         (progress) => {
           if (carRef.current) {
-            carRef.current.style.transform = `translateX(${progress * 1000}px)`; // 1000px ტრასა
+            carRef.current.style.transform = `translateX(${progress * 1000}px)`; 
           }
         },
         () => {
@@ -73,7 +73,7 @@ const CarItem: React.FC<Props> = ({ car, onDelete, onSelect }) => {
     };
   }, [car.id]);
 
-// src/components/CarItem.tsx (მხოლოდ return ნაწილი შეცვალე)
+
 return (
   <div style={{ margin: "40px 0", padding: 20, background: "rgba(0,0,0,0.6)", borderRadius: 15, border: "2px solid #333" }}>
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 15 }}>

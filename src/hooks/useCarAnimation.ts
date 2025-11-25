@@ -1,4 +1,4 @@
-// src/hooks/useCarAnimation.ts
+
 import { useRef } from 'react';
 
 export const useCarAnimation = () => {

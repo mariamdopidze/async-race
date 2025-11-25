@@ -1,4 +1,4 @@
-// src/pages/GaragePage.tsx
+
 import React, { useState, useEffect } from "react";
 import { useGarage } from "../hooks/useGarage";
 import CarItem from "../components/CarItem";
@@ -22,7 +22,7 @@ const GaragePage: React.FC = () => {
 
   const currentCars = cars.slice((page - 1) * limit, page * limit);
 
-  // გამარჯვებულის შენახვა API-ში
+  
   const saveWinner = async (carId: number, time: number) => {
     const { getWinner, createWinner, updateWinner } = await import("../api/winnersApi");
     const existing = await getWinner(carId);
@@ -37,13 +37,13 @@ const GaragePage: React.FC = () => {
     }
   };
 
-  // მოვუსმინოთ მანქანის ფინიშს
+
   useEffect(() => {
     const handleCarFinish = ((e: CustomEvent) => {
       if (!isRacing) return;
       const { car, time } = e.detail;
       setWinner({ car, time });
-      saveWinner(car.id, time); // აქ ვინახავთ გამარჯვებულს
+      saveWinner(car.id, time); 
       setIsRacing(false);
     }) as EventListener;
 

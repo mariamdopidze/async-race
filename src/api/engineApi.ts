@@ -1,4 +1,4 @@
-// src/api/engineApi.ts
+
 
 const BASE_URL = 'http://127.0.0.1:3000';
 
@@ -34,7 +34,7 @@ export const switchToDrive = async (id: number): Promise<DriveResponse> => {
     method: 'PATCH',
   });
 
-  // 500 = მანქანა გაიჩერა (ბრეიქდაუნი)
+  
   if (res.status === 500) {
     return { success: false };
   }

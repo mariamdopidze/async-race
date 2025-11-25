@@ -1,10 +1,10 @@
-// src/components/RaceControls.tsx
+
 import React from "react";
 
 interface Props {
   onRaceStart: () => void;
   onRaceReset: () => void;
-  onGenerateCars: () => void;   // ← ასე უნდა ყოფილიყო!
+  onGenerateCars: () => void;  
   isRacing: boolean;
 }
 

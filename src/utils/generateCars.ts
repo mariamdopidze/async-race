@@ -1,4 +1,4 @@
-// src/utils/generateCars.ts
+
 const brands = [
   "Tesla", "BMW", "Mercedes", "Audi", "Porsche", "Ferrari", "Lamborghini",
   "Toyota", "Honda", "Ford", "Chevrolet", "Nissan", "Volkswagen", "Hyundai"

@@ -1,4 +1,4 @@
-// src/components/WinnerModal.tsx
+
 import React from "react";
 
 interface Winner {

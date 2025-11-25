@@ -1,4 +1,4 @@
-// src/pages/WinnersPage.tsx
+
 import React, { useState, useEffect } from "react";
 import { getWinners } from "../api/winnersApi";
 

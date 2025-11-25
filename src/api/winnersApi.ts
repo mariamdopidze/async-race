@@ -1,10 +1,10 @@
-// src/api/winnersApi.ts
+
 const BASE_URL = 'http://127.0.0.1:3000';
 
 export interface Winner {
   id: number;
   wins: number;
-  time: number; // seconds
+  time: number; 
 }
 
 export interface WinnerWithCar {
