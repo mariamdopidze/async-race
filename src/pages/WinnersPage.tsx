@@ -1,32 +1,39 @@
+// src/pages/WinnersPage.tsx
 import React, { useState, useEffect } from "react";
+import { getWinners } from "../api/winnersApi";
 
 const WinnersPage = () => {
   const [winners, setWinners] = useState<any[]>([]);
+  const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [sort, setSort] = useState("wins");
+  const [sort, setSort] = useState<"wins" | "time">("wins");
+  const [order, setOrder] = useState<"ASC" | "DESC">("DESC");
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:3000/winners?_page=${page}&_limit=10&_sort=${sort}&_order=DESC&_embed=car`)
-      .then(r => {
-        const total = r.headers.get("X-Total-Count");
-        return r.json().then(data => ({ data, total: total ? +total : 0 }));
-      })
-      .then(({ data, total }) => {
-        setWinners(data);
-      });
-  }, [page, sort]);
+    const load = async () => {
+      const { data, total } = await getWinners(page, 10, sort, order);
+      setWinners(data);
+      setTotal(total);
+    };
+    load();
+  }, [page, sort, order]);
 
   return (
-    <div style={{ padding: 40 }}>
-      <h1>WINNERS</h1>
-      <button onClick={() => setSort(sort === "wins" ? "time" : "wins")}>
-        Sort by {sort === "wins" ? "Time" : "Wins"}
+    <div style={{ padding: "40px" }}>
+      <h1 style={{ textAlign: "center", color: "#ff00ff" }}>WINNERS ({total})</h1>
+
+      <button onClick={() => {
+        if (sort === "wins") setSort("time");
+        else if (sort === "time") setOrder(order === "ASC" ? "DESC" : "ASC");
+        else setSort("wins");
+      }}>
+        Sort by {sort} {order}
       </button>
 
-      <table style={{ width: "100%", marginTop: 30, borderCollapse: "collapse" }}>
+      <table style={{ width: "100%", marginTop: "40px", borderCollapse: "collapse" }}>
         <thead>
-          <tr style={{ background: "#161b22" }}>
-            <th style={{ padding: 15 }}>№</th>
+          <tr>
+            <th>№</th>
             <th>Car</th>
             <th>Name</th>
             <th>Wins</th>
@@ -34,19 +41,23 @@ const WinnersPage = () => {
           </tr>
         </thead>
         <tbody>
-          {winners.map((w: any, i: number) => (
-            <tr key={w.id} style={{ background: i%2===0 ? "#161b22" : "#0d1117" }}>
-              <td style={{ textAlign: "center", padding: 15 }}>{(page-1)*10 + i + 1}</td>
-              <td style={{ textAlign: "center" }}>
-                <div style={{ width: 100, height: 50, background: w.car.color, borderRadius: 10, margin: "0 auto" }}></div>
-              </td>
-              <td style={{ textAlign: "center" }}>{w.car.name}</td>
-              <td style={{ textAlign: "center", fontSize: "1.5rem", color: "#00ff88" }}>{w.wins}</td>
-              <td style={{ textAlign: "center" }}>{w.time}s</td>
+          {winners.map((w, i) => (
+            <tr key={w.id}>
+              <td>{(page - 1) * 10 + i + 1}</td>
+              <td><div style={{ width: "100px", height: "50px", background: w.car.color, margin: "0 auto", borderRadius: "10px" }}></div></td>
+              <td>{w.car.name}</td>
+              <td>{w.wins}</td>
+              <td>{w.time.toFixed(2)}s</td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      <div style={{ textAlign: "center", marginTop: "40px" }}>
+        <button onClick={() => setPage(p => p - 1)} disabled={page === 1}>Prev</button>
+        <span style={{ margin: "0 30px" }}>Page {page}</span>
+        <button onClick={() => setPage(p => p + 1)} disabled={page * 10 >= total}>Next</button>
+      </div>
     </div>
   );
 };

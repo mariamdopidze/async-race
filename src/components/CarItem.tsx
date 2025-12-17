@@ -15,27 +15,24 @@ const CarItem: React.FC<Props> = ({ car, onDelete, onSelect }) => {
   const animationId = useRef<number | null>(null);
   const isRacing = useRef(false);
 
-  const startEngineAndRace = async () => {
+  const startDriving = async () => {
     if (isRacing.current) return;
     isRacing.current = true;
 
     try {
-      // 1. ძრავის ჩართვა — ვიღებთ velocity და distance
       const { velocity, distance } = await startEngine(car.id);
-      const duration = Math.round(distance / velocity); // ms-ში
+      const duration = Math.round(distance / velocity); // ms
 
-      // 2. Drive რეჟიმი — თუ 500 მივიღეთ, მანქანა ჩერდება
       const driveRes = await switchToDrive(car.id);
       if (!driveRes.success) {
-        console.log("მანქანა გაიჭედა (broken)", car.name);
+        console.log(`${car.name} გაიჭედა!`);
         isRacing.current = false;
         return;
       }
 
-      // 3. ანიმაცია
       if (!trackRef.current || !carRef.current) return;
 
-      const trackWidth = trackRef.current.offsetWidth - carRef.current.offsetWidth - 50; // მარჯინი
+      const trackWidth = trackRef.current.offsetWidth - carRef.current.offsetWidth - 50;
 
       let startTime: number | null = null;
 
@@ -52,7 +49,6 @@ const CarItem: React.FC<Props> = ({ car, onDelete, onSelect }) => {
         if (progress < 1) {
           animationId.current = requestAnimationFrame(animate);
         } else {
-          // ფინიში — ვაგზავნით event-ს
           window.dispatchEvent(
             new CustomEvent("car-finished", {
               detail: { car, time: duration },
@@ -64,12 +60,12 @@ const CarItem: React.FC<Props> = ({ car, onDelete, onSelect }) => {
 
       animationId.current = requestAnimationFrame(animate);
     } catch (err) {
-      console.log("შეცდომა ძრავის ჩართვისას", err);
+      console.log("ძრავის პრობლემა", err);
       isRacing.current = false;
     }
   };
 
-  const stopEngineAndReset = async () => {
+  const stopDriving = async () => {
     if (animationId.current) {
       cancelAnimationFrame(animationId.current);
       animationId.current = null;
@@ -80,35 +76,44 @@ const CarItem: React.FC<Props> = ({ car, onDelete, onSelect }) => {
     try {
       await stopEngine(car.id);
     } catch (err) {
-      console.log("შეცდომა ძრავის გაჩერებისას", err);
+      console.log("გაჩერების შეცდომა", err);
     }
     isRacing.current = false;
   };
 
   useEffect(() => {
-    const handleStart = (e: CustomEvent<number>) => {
-      if (e.detail === car.id) startEngineAndRace();
-    };
-    const handleStop = (e: CustomEvent<number>) => {
-      if (e.detail === car.id) stopEngineAndReset();
+    const handleStart = (e: Event) => {
+      const customEvent = e as CustomEvent<number>;
+      if (customEvent.detail === car.id) startDriving();
     };
 
-    window.addEventListener("start-car", handleStart as EventListener);
-    window.addEventListener("stop-car", handleStop as EventListener);
+    const handleStop = (e: Event) => {
+      const customEvent = e as CustomEvent<number>;
+      if (customEvent.detail === car.id) stopDriving();
+    };
+
+    window.addEventListener("start-car", handleStart);
+    window.addEventListener("stop-car", handleStop);
 
     return () => {
-      window.removeEventListener("start-car", handleStart as EventListener);
-      window.removeEventListener("stop-car", handleStop as EventListener);
+      window.removeEventListener("start-car", handleStart);
+      window.removeEventListener("stop-car", handleStop);
     };
   }, [car.id]);
 
   return (
     <div style={{ margin: "40px 0", padding: "20px", background: "rgba(0,0,0,0.6)", borderRadius: "15px", border: "2px solid #444" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-        <h3 style={{ color: "#00ffff", fontSize: "1.8rem" }}>{car.name}</h3>
+        <h3 style={{ color: "#00ffff", fontSize: "1.8rem", textShadow: "0 0 15px #00ffff" }}>
+          {car.name.toUpperCase()}
+        </h3>
         <div>
-          <button onClick={() => onSelect(car)} style={{ marginRight: "10px" }}>Select</button>
-          <button onClick={() => onDelete(car.id)} style={{ background: "#ff4444" }}>Remove</button>
+          <button onClick={() => onSelect(car)} style={{ marginRight: "10px", padding: "8px 16px", background: "#333", color: "#00ffff" }}>
+            Select
+          </button>
+          <button onClick={() => onDelete(car.id)} style={{ padding: "8px 16px", background: "#ff4444", color: "white" }}>
+            Remove
+          </button>
         </div>
       </div>
 
@@ -116,11 +121,11 @@ const CarItem: React.FC<Props> = ({ car, onDelete, onSelect }) => {
         ref={trackRef}
         style={{
           position: "relative",
-          height: "100px",
-          background: "#111",
+          height: "120px",
+          background: "linear-gradient(to bottom, #111 0%, #222 50%, #111 100%)",
           borderRadius: "15px",
-          border: "3px solid #00ffff",
-          boxShadow: "0 0 30px #00ffff",
+          border: "4px solid #00ffff",
+          boxShadow: "0 0 40px #00ffff",
           overflow: "hidden"
         }}
       >
@@ -129,38 +134,38 @@ const CarItem: React.FC<Props> = ({ car, onDelete, onSelect }) => {
           style={{
             position: "absolute",
             left: "20px",
-            top: "20px",
+            top: "30px",
             transition: "none",
           }}
         >
           <div
             style={{
-              width: "160px",
+              width: "180px",
               height: "60px",
               background: car.color,
-              borderRadius: "20px",
+              borderRadius: "25px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               color: "black",
               fontWeight: "bold",
-              boxShadow: "0 0 20px " + car.color,
+              fontSize: "1.2rem",
+              boxShadow: "0 0 30px " + car.color,
             }}
           >
             {car.name}
           </div>
         </div>
 
-        {/* ფინიშის ხაზი */}
         <div
           style={{
             position: "absolute",
             right: "20px",
             top: "0",
             bottom: "0",
-            width: "15px",
-            background: "repeating-linear-gradient(0deg, #fff, #fff 20px, #000 20px, #000 40px)",
-            boxShadow: "0 0 20px #fff",
+            width: "20px",
+            background: "repeating-linear-gradient(0deg, #fff, #fff 30px, #000 30px, #000 60px)",
+            boxShadow: "0 0 40px #fff",
           }}
         />
       </div>

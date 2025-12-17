@@ -1,95 +1,25 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@600;700&display=swap');
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap');
 
 body {
-  background: #0a0118;
-  background-image: 
-    radial-gradient(circle at top left, #1a0033 0%, transparent 50%),
-    radial-gradient(circle at bottom right, #000033 0%, transparent 50%),
-    url('https://images.unsplash.com/photo-1557682250-33bd709cbe85?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
-  background-size: cover;
-  background-attachment: fixed;
+  background: #000;
   color: #fff;
-  font-family: 'Rajdhani', sans-serif;
-  min-height: 100vh;
-}
-
-h1, h2, h3 {
   font-family: 'Orbitron', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 4px;
+  margin: 0;
 }
 
-.neon-text {
-  color: #00ffff;
-  text-shadow: 
-    0 0 10px #00ffff,
-    0 0 20px #00ffff,
-    0 0 40px #00ffff,
-    0 0 80px #00ffff;
-  animation: pulse 3s infinite;
-}
-
-.neon-pink {
-  color: #ff00ff;
-  text-shadow: 
-    0 0 10px #ff00ff,
-    0 0 20px #ff00ff,
-    0 0 40px #ff00ff;
-}
-
-.neon-btn {
+button {
+  padding: 20px 60px;
+  font-size: 2rem;
   background: transparent;
-  border: 3px solid #00ffff;
+  border: 4px solid #00ffff;
   color: #00ffff;
-  padding: 15px 50px;
-  font-size: 1.8rem;
-  font-family: 'Orbitron', sans-serif;
-  border-radius: 10px;
+  borderRadius: "15px";
   cursor: pointer;
+  box-shadow: 0 0 40px #00ffff;
   transition: all 0.3s;
-  box-shadow: 0 0 20px #00ffff;
 }
 
-.neon-btn:hover {
+button:hover {
   background: #00ffff;
   color: #000;
-  box-shadow: 0 0 40px #00ffff;
-}
-
-.race-btn {
-  background: linear-gradient(45deg, #ff0080, #ff00ff);
-  border: none;
-  box-shadow: 0 0 30px #ff00ff;
- 
-}
-
-.track {
-  background: #111;
-  border: 4px solid #00ffff;
-  box-shadow: 0 0 30px #00ffff, inset 0 0 20px rgba(0, 255, 255, 0.3);
-  position: relative;
-  overflow: hidden;
-  border-radius: 15px;
-}
-
-.finish-line {
-  position: absolute;
-  right: 10px;
-  top: 0;
-  bottom: 0;
-  width: 15px;
-  background: repeating-linear-gradient(0deg, #fff, #fff 25px, #000 25px, #000 50px);
-  box-shadow: 0 0 30px #fff;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.8; }
 }
