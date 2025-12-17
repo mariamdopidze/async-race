@@ -1,6 +1,6 @@
 
 
-const BASE_URL = 'http://127.0.0.1:3000';
+const BASE_URL = 'https://async-race-api-mariam.onrender.com';
 
 export type EngineResponse = {
   velocity: number;

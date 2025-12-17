@@ -1,7 +1,6 @@
-
+// src/components/CarItem.tsx
 import React, { useEffect, useRef } from "react";
 import { Car } from "../api/garageApi";
-import { useCarAnimation } from "../hooks/useCarAnimation";
 import { startEngine, stopEngine, switchToDrive } from "../api/engineApi";
 
 interface Props {
@@ -11,57 +10,87 @@ interface Props {
 }
 
 const CarItem: React.FC<Props> = ({ car, onDelete, onSelect }) => {
-  const { animate, stop } = useCarAnimation();
+  const trackRef = useRef<HTMLDivElement>(null);
   const carRef = useRef<HTMLDivElement>(null);
-  const isAnimating = useRef(false);
+  const animationId = useRef<number | null>(null);
+  const isRacing = useRef(false);
 
-  const startDriving = async () => {
-    if (isAnimating.current) return;
-    isAnimating.current = true;
+  const startEngineAndRace = async () => {
+    if (isRacing.current) return;
+    isRacing.current = true;
 
     try {
+      // 1. ძრავის ჩართვა — ვიღებთ velocity და distance
       const { velocity, distance } = await startEngine(car.id);
-      const duration = distance / velocity; 
+      const duration = Math.round(distance / velocity); // ms-ში
 
-      await switchToDrive(car.id); 
+      // 2. Drive რეჟიმი — თუ 500 მივიღეთ, მანქანა ჩერდება
+      const driveRes = await switchToDrive(car.id);
+      if (!driveRes.success) {
+        console.log("მანქანა გაიჭედა (broken)", car.name);
+        isRacing.current = false;
+        return;
+      }
 
-      animate(
-        duration,
-        (progress) => {
-          if (carRef.current) {
-            carRef.current.style.transform = `translateX(${progress * 1000}px)`; 
-          }
-        },
-        () => {
-          isAnimating.current = false;
+      // 3. ანიმაცია
+      if (!trackRef.current || !carRef.current) return;
+
+      const trackWidth = trackRef.current.offsetWidth - carRef.current.offsetWidth - 50; // მარჯინი
+
+      let startTime: number | null = null;
+
+      const animate = (timestamp: number) => {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const position = progress * trackWidth;
+
+        if (carRef.current) {
+          carRef.current.style.transform = `translateX(${position}px)`;
+        }
+
+        if (progress < 1) {
+          animationId.current = requestAnimationFrame(animate);
+        } else {
+          // ფინიში — ვაგზავნით event-ს
           window.dispatchEvent(
             new CustomEvent("car-finished", {
               detail: { car, time: duration },
             })
           );
+          isRacing.current = false;
         }
-      );
-    } catch (err: any) {
-      isAnimating.current = false;
-      stop();
+      };
+
+      animationId.current = requestAnimationFrame(animate);
+    } catch (err) {
+      console.log("შეცდომა ძრავის ჩართვისას", err);
+      isRacing.current = false;
     }
   };
 
-  const stopDriving = async () => {
-    stop();
-    if (carRef.current) {
-      carRef.current.style.transform = "translateX(0px)";
+  const stopEngineAndReset = async () => {
+    if (animationId.current) {
+      cancelAnimationFrame(animationId.current);
+      animationId.current = null;
     }
-    await stopEngine(car.id);
-    isAnimating.current = false;
+    if (carRef.current) {
+      carRef.current.style.transform = "translateX(0)";
+    }
+    try {
+      await stopEngine(car.id);
+    } catch (err) {
+      console.log("შეცდომა ძრავის გაჩერებისას", err);
+    }
+    isRacing.current = false;
   };
 
   useEffect(() => {
     const handleStart = (e: CustomEvent<number>) => {
-      if (e.detail === car.id) startDriving();
+      if (e.detail === car.id) startEngineAndRace();
     };
     const handleStop = (e: CustomEvent<number>) => {
-      if (e.detail === car.id) stopDriving();
+      if (e.detail === car.id) stopEngineAndReset();
     };
 
     window.addEventListener("start-car", handleStart as EventListener);
@@ -73,47 +102,70 @@ const CarItem: React.FC<Props> = ({ car, onDelete, onSelect }) => {
     };
   }, [car.id]);
 
-
-return (
-  <div style={{ margin: "40px 0", padding: 20, background: "rgba(0,0,0,0.6)", borderRadius: 15, border: "2px solid #333" }}>
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 15 }}>
-      <h3 style={{ color: "#00f0ff", fontSize: "1.8rem", textShadow: "0 0 10px #00f0ff" }}>
-        {car.name.toUpperCase()}
-      </h3>
-      <div>
-        <button style={{ background: "#00f0ff", color: "#000" }}>SELECT</button>
-        <button style={{ background: "#ff0066", color: "#fff", marginLeft: 10 }}>REMOVE</button>
+  return (
+    <div style={{ margin: "40px 0", padding: "20px", background: "rgba(0,0,0,0.6)", borderRadius: "15px", border: "2px solid #444" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+        <h3 style={{ color: "#00ffff", fontSize: "1.8rem" }}>{car.name}</h3>
+        <div>
+          <button onClick={() => onSelect(car)} style={{ marginRight: "10px" }}>Select</button>
+          <button onClick={() => onDelete(car.id)} style={{ background: "#ff4444" }}>Remove</button>
+        </div>
       </div>
-    </div>
 
-    <div className="track" style={{ height: 100, borderRadius: 15, position: "relative" }}>
       <div
-        ref={carRef}
+        ref={trackRef}
         style={{
-          position: "absolute",
-          left: 20,
-          top: 20,
-          transition: "none",
-          transform: "translateX(0px)",
+          position: "relative",
+          height: "100px",
+          background: "#111",
+          borderRadius: "15px",
+          border: "3px solid #00ffff",
+          boxShadow: "0 0 30px #00ffff",
+          overflow: "hidden"
         }}
       >
-        <svg width="160" height="70" viewBox="0 0 160 70">
-          <defs>
-            <linearGradient id={`grad-${car.id}`} x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor={car.color} />
-              <stop offset="100%" stopColor="#fff" />
-            </linearGradient>
-          </defs>
-          <rect width="160" height="60" fill={`url(#grad-${car.id})`} rx="20" />
-          <text x="80" y="40" fill="#000" fontSize="18" fontWeight="bold" textAnchor="middle">
-            {car.name.split(" ")[0]}
-          </text>
-        </svg>
+        <div
+          ref={carRef}
+          style={{
+            position: "absolute",
+            left: "20px",
+            top: "20px",
+            transition: "none",
+          }}
+        >
+          <div
+            style={{
+              width: "160px",
+              height: "60px",
+              background: car.color,
+              borderRadius: "20px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "black",
+              fontWeight: "bold",
+              boxShadow: "0 0 20px " + car.color,
+            }}
+          >
+            {car.name}
+          </div>
+        </div>
+
+        {/* ფინიშის ხაზი */}
+        <div
+          style={{
+            position: "absolute",
+            right: "20px",
+            top: "0",
+            bottom: "0",
+            width: "15px",
+            background: "repeating-linear-gradient(0deg, #fff, #fff 20px, #000 20px, #000 40px)",
+            boxShadow: "0 0 20px #fff",
+          }}
+        />
       </div>
-      <div className="finish-line" />
     </div>
-  </div>
-);
+  );
 };
 
 export default CarItem;
