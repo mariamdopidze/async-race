@@ -18,7 +18,7 @@ const GaragePage = () => {
   const startIdx = (page - 1) * carsPerPage;
   const visibleCars = cars.slice(startIdx, startIdx + carsPerPage);
 
-  // გამარჯვებულის შენახვა
+  
   const saveWinner = async (carId: number, timeInMs: number) => {
     try {
       const seconds = Number((timeInMs / 1000).toFixed(2));
@@ -75,6 +75,10 @@ const GaragePage = () => {
 
   // Generate 100 random cars
   const generateCars = async () => {
+    <button
+  onClick={async () => {
+    if (!confirm("100 მანქანა შეიქმნება?")) return;
+
     const brands = ["Tesla", "BMW", "Audi", "Mercedes", "Ferrari", "Lamborghini", "Toyota", "Honda", "Ford", "Porsche"];
     const models = ["Model S", "X5", "A8", "S-Class", "488", "Huracan", "Camry", "Civic", "Mustang", "911"];
 
@@ -83,7 +87,13 @@ const GaragePage = () => {
       const color = `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, "0")}`;
       await addNewCar(name, color);
     }
-    alert("100 მანქანა შეიქმნა!");
+
+    alert("100 მანქანა შეიქმნა! გადატვირთე გვერდი");
+  }}
+  style={{ /* შენი სტილი */ }}
+>
+  Generate 100 cars
+</button>
   };
 
   // Update car

@@ -1,5 +1,5 @@
 
-const BASE_URL = 'https://async-race-api-mariam.onrender.com';
+const BASE_URL = "https://async-race-api-2025.onrender.com";
 
 export interface Winner {
   id: number;
